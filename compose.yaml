@@ -1,0 +1,31 @@
+version: "3"
+services:
+  db:
+    container_name: db_p
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gymmie
+    ports:
+      - 5432:5432
+    volumes:
+      - ./server/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  server:
+    container_name: server_p
+    build: ./server
+    ports:
+      - 4000:4000
+    depends_on:
+      - db
+    volumes:
+      - ./server:/app
+  client:
+    container_name: client_p
+    build: ./client
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client:/app
+    stdin_open: true
+    tty: true
