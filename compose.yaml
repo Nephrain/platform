@@ -17,19 +17,19 @@ services:
       timeout: 5s
       retries: 5
 
-  client:
-    container_name: client_p
-    build: ./client
+  frontend:
+    container_name: frontend
+    build: ./frontend
     ports:
       - 3000:3000
     volumes:
-      - ./client:/app
+      - ./frontend:/app
     stdin_open: true
     tty: true
 
-  server:
-    container_name: server_p
-    image: server_p:1.0.0
+  backend:
+    container_name: backend
+    image: backend:1.0.0
     build:
       context: ./backend
       dockerfile: flask.dockerfile
