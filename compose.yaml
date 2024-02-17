@@ -6,20 +6,18 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: gymmie
+      POSTGRES_DB: platform
     ports:
       - 5432:5432
     volumes:
-      - ./server/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-  server:
-    container_name: server_p
-    build: ./server
-    ports:
-      - 4000:4000
-    depends_on:
-      - db
-    volumes:
-      - ./server:/app
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
   client:
     container_name: client_p
     build: ./client
@@ -29,3 +27,19 @@ services:
       - ./client:/app
     stdin_open: true
     tty: true
+
+  server:
+    container_name: server_p
+    image: server_p:1.0.0
+    build:
+      context: ./backend
+      dockerfile: flask.dockerfile
+    ports:
+      - 4000:4000
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/platform
+    depends_on:
+      - db
+
+volumes:
+  pgdata: {}
