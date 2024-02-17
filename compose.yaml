@@ -1,7 +1,7 @@
 version: "3"
 services:
   db:
-    container_name: db_p
+    container_name: database
     image: postgres:13
     environment:
       POSTGRES_USER: postgres
